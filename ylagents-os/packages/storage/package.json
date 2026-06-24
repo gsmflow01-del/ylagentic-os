@@ -1,0 +1,11 @@
+{
+  "name": "@ylagents/storage",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "dependencies": {
+    "@capacitor-community/sqlite": "^6.0.0",
+    "@capacitor/core": "^6.0.0"
+  }
+}
