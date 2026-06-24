@@ -1,22 +1,35 @@
+import { localBridge } from '../bridge/localBridge';
+
 export interface ISyncProvider {
-  push(dbFile: any): Promise<void>;
+  push(data: any): Promise<void>;
   pull(): Promise<any>;
 }
 
-export class TursoSyncProvider implements ISyncProvider {
-  async push(dbFile: any): Promise<void> {
-    console.log('Pushing to Turso Cloud...');
+export class SyncEngine {
+  constructor() {
+    this.registerBridgeHandlers();
   }
 
-  async pull(): Promise<any> {
-    console.log('Pulling from Turso Cloud...');
-    return null;
-  }
-}
+  private registerBridgeHandlers() {
+    localBridge.register('api:sync:status', async () => {
+      return { last_synced: Date.now(), status: 'idle' };
+    });
 
-export function mergeMessages(local: any[], remote: any[]) {
-  // Last-write-wins based on timestamp merge logic
-  const merged = [...local];
-  // ... merge implementation
-  return merged;
+    localBridge.register('api:sync:trigger', async () => {
+      console.log('Sync triggered...');
+      return { success: true };
+    });
+  }
+
+  mergeMessages(local: any[], remote: any[]) {
+    // Smart merge: last-write-wins by timestamp
+    const map = new Map();
+    [...local, ...remote].forEach(m => {
+      const existing = map.get(m.id);
+      if (!existing || m.updated_at > existing.updated_at) {
+        map.set(m.id, m);
+      }
+    });
+    return Array.from(map.values());
+  }
 }

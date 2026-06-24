@@ -1,27 +1,24 @@
-export type BridgeEvent = {
-  name: string;
-  data: any;
-  response: any;
-};
-
-export interface IBridgeHandler<T extends BridgeEvent> {
-  invoke(data: T['data']): Promise<T['response']>;
-}
+export type BridgeHandler<TReq = any, TRes = any> = (params: TReq) => Promise<TRes>;
 
 export class LocalBridge {
-  private handlers: Map<string, (data: any) => Promise<any>> = new Map();
+  private handlers: Map<string, BridgeHandler> = new Map();
 
-  register<T extends BridgeEvent>(name: T['name'], handler: (data: T['data']) => Promise<T['response']>) {
+  register<TReq, TRes>(name: string, handler: BridgeHandler<TReq, TRes>): void {
     this.handlers.set(name, handler);
   }
 
-  async invoke<T extends BridgeEvent>(name: T['name'], data: T['data']): Promise<T['response']> {
+  async invoke<TRes>(name: string, params?: any): Promise<TRes> {
     const handler = this.handlers.get(name);
     if (!handler) {
-      console.warn(`No handler registered for bridge event: ${name}`);
-      return null;
+      console.warn(`[LocalBridge] No handler registered for: ${name}`);
+      return null as any;
     }
-    return await handler(data);
+    try {
+      return await handler(params);
+    } catch (error) {
+      console.error(`[LocalBridge] Error in handler ${name}:`, error);
+      throw error;
+    }
   }
 }
 
