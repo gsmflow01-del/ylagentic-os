@@ -1,10 +1,9 @@
 export const isMobile = () => {
-  // Enhanced detection for Capacitor/Native environment
-  return window.innerWidth <= 768 || (window as any).Capacitor !== undefined;
+  return window.innerWidth <= 768 || (window as any).Capacitor?.isNative;
 };
 
-export const hapticFeedback = async () => {
+export const nativeVibrate = async () => {
   if ((window as any).Capacitor?.Plugins?.Haptics) {
-    await (window as any).Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
+    await (window as any).Capacitor.Plugins.Haptics.vibrate();
   }
 };

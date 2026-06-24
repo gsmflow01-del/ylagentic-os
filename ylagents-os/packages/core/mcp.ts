@@ -6,22 +6,25 @@ export interface IMCPTransport {
 
 export class NativeHttpTransport implements IMCPTransport {
   async send(payload: any): Promise<any> {
-    console.log('MCP request via Native HTTP (Bypassing CORS)', payload);
+    // Logic for Capacitor/Tauri Native Http to bypass CORS
+    console.debug('MCP Native Http Request', payload);
     return { result: { tools: [] } };
   }
 }
 
 export class MCPClient {
   constructor(private transport: IMCPTransport) {
-    this.registerBridgeHandlers();
+    this.registerHandlers();
   }
 
-  private registerBridgeHandlers() {
-    localBridge.register('api:mcp:servers', async () => {
+  private registerHandlers() {
+    localBridge.register('api:mcp:list', async () => {
+      // Fetch from SQLite mcp_servers table
       return [];
     });
 
-    localBridge.register('api:mcp:test-connection', async (params: any) => {
+    localBridge.register('api:mcp:test', async (params: any) => {
+      console.log('Testing MCP Connection...', params);
       return { success: true };
     });
   }

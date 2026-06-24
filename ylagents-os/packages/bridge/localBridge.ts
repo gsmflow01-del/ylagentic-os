@@ -1,6 +1,8 @@
+import { EventEmitter } from 'eventemitter3';
+
 export type BridgeHandler<TReq = any, TRes = any> = (params: TReq) => Promise<TRes>;
 
-export class LocalBridge {
+export class LocalBridge extends EventEmitter {
   private handlers: Map<string, BridgeHandler> = new Map();
 
   register<TReq, TRes>(name: string, handler: BridgeHandler<TReq, TRes>): void {

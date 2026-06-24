@@ -6,6 +6,7 @@
   "main": "./index.ts",
   "dependencies": {
     "@capacitor-community/sqlite": "^6.0.0",
-    "@capacitor/core": "^6.0.0"
+    "@capacitor/core": "^6.0.0",
+    "better-sqlite3": "^12.11.1"
   }
 }
